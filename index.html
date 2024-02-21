@@ -12,10 +12,10 @@
         <div class="reservation-container">
             <div class="sidebar">
                 <div class="progress">
-                    <div class="pinpoint done">
+                    <div class="pinpoint current">
                         <p class="pinpoint-label">Staff</p>
                     </div>
-                    <div class="pinpoint success">
+                    <div class="pinpoint">
                         <p class="pinpoint-label">Service</p>
                     </div>
                     <div class="pinpoint">
@@ -31,7 +31,7 @@
                 <div class="content-top">
                     <h1 class="process-title">Select staff</h1>
                 </div>
-                <div class="content-main">
+                <div id="contentBox" class="content-main">
                     <!-- Defaul Option -->
                     <!-- <div class="option">
                         <div class="option-img">
@@ -49,7 +49,7 @@
                         <div class="option-description">alexyrosetta@egmail.com</div>
                         <div class="option-price">50$</div>
                     </div> -->
-                    <div class="date">
+                    <!-- <div class="date">
                         <div class="date-calendar">
                             <div class="navigator">
                                 <div class="navigator-prev">
@@ -102,22 +102,23 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="content-bottom">
                     <div class="left">
-                        <div class="back">BACK</div>
+                        <div id="backBtn" class="back">BACK</div>
                         <div class="info">
                             <img class="info-img" src="./images/info.svg" alt="Info" />
                             <div class="info-text">SELECT DATE & TIME</div>
                         </div>
                     </div>
                     <div class="right">
-                        <div class="next">NEXT</div>
+                        <div id="nextBtn" class="next">NEXT</div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
+    <script src="./js/main.js" type="module"></script>
 </body>
 </html>

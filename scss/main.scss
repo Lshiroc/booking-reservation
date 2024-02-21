@@ -38,7 +38,7 @@ main {
         column-gap: 12px;
         counter-increment: pinpoint-counter;
 
-        &.success {
+        &.current {
             &::before {
                 background-color: $successgreen;
             }          
@@ -110,6 +110,7 @@ main {
             grid-template-rows: auto auto;
             column-gap: 22px;
             margin-bottom: 10px;
+            cursor: pointer;
 
             &.selected {
                 border: 2px solid $successgreen;
@@ -329,6 +330,7 @@ main {
             align-items: center;
             column-gap: 10px;
             grid-column: 1 / 2;
+            visibility: hidden;
 
             &-img {
                 width: 20px;
@@ -364,6 +366,7 @@ main {
         .right {
             display: flex;
             justify-content: end;
+            align-items: center;
         }
 
         .next {
