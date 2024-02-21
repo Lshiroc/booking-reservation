@@ -1,0 +1,131 @@
+@import 'variables';
+
+body {
+    background-image: url('./../images/header-bg-shape.png'), url('./../images/Rectangle.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+}
+
+main {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.reservation-container {
+    display: grid;
+    grid-template-columns: 230px 750px;
+    height: 560px;
+}
+
+.sidebar {
+    background-color: $blackishgray;
+}
+
+.progress {
+    display: flex;
+    flex-direction: column;
+    row-gap: 25px;
+    padding: 30px 15px 30px 30px;
+
+    .pinpoint {
+        display: flex;
+        align-items: center;
+        column-gap: 12px;
+
+        &.success {
+            .pinpoint-order {
+                background-color: $successgreen;
+            }          
+
+            .pinpoint-label {
+                color: $successgreen;
+            }
+        }
+
+        &-order {
+            width: 24px;
+            height: 24px;
+            color: $white;
+            font-size: 12px;
+            line-height: 12px;
+            font-weight: 600;
+            background-color: $mediumgray;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        &-label {
+            font-size: 14px;
+            line-height: 21px;
+            color: $darkgray;
+        }
+    }
+}
+
+.content {
+    background-color: $whitishgray;
+
+    .topBar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid $divider;
+        padding: 19px 25px 23px 30px;
+        
+        .process-title {
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 27px;
+            color: $blackishgray;
+        }
+    }
+
+    &-main {
+        padding: 25px 30px 0 30px;
+
+        .option {
+            padding: 15px 20px;
+            background-color: $white;
+            display: grid;
+            grid-template-columns: 50px auto;
+            grid-template-rows: auto auto;
+            column-gap: 22px;
+            margin-bottom: 10px;
+
+            &-img {
+                width: 50px;
+                height: 50px;
+                grid-column: 1 / 2;
+                grid-row: 1 / 3;
+
+                img {
+                    width: 100%;
+                    display: block;
+                    border-radius: 50%;
+                }
+            }
+
+            &-title {
+                font-size: 14px;
+                font-weight: 500;
+                line-height: 21px;
+                color: $blackishgray;
+                align-self: end;
+            }
+
+            &-description {
+                font-size: 12px;
+                font-weight: 400;
+                line-height: 19px;
+                color: $lightgray;
+            }
+        }
+    }
+}
+
+
