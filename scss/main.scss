@@ -22,6 +22,8 @@ main {
 
 .sidebar {
     background-color: $blackishgray;
+    display: grid;
+    grid-template-rows: 1fr auto;
 }
 
 .progress {
@@ -34,9 +36,10 @@ main {
         display: flex;
         align-items: center;
         column-gap: 12px;
+        counter-increment: pinpoint-counter;
 
         &.success {
-            .pinpoint-order {
+            &::before {
                 background-color: $successgreen;
             }          
 
@@ -45,11 +48,17 @@ main {
             }
         }
 
-        &-order {
+        &.done::before {
+            content: url('./../images/okay.svg');
+            background-color: $purple;
+        }
+
+        &::before {
+            content: counter(pinpoint-counter);
             width: 24px;
             height: 24px;
             color: $white;
-            font-size: 12px;
+            font-size: 12px;    
             line-height: 12px;
             font-weight: 600;
             background-color: $mediumgray;
@@ -67,13 +76,17 @@ main {
     }
 }
 
+.bottom-space {
+    padding-bottom: 75px;
+    border-top: 1px solid rgb(255, 255, 255, 0.1);
+}
+
 .content {
     background-color: $whitishgray;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
 
-    .topBar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+    &-top {
         border-bottom: 1px solid $divider;
         padding: 19px 25px 23px 30px;
         
@@ -86,16 +99,40 @@ main {
     }
 
     &-main {
-        padding: 25px 30px 0 30px;
+        padding: 25px 30px 42px 30px;
 
         .option {
             padding: 15px 20px;
             background-color: $white;
+            border: 2px solid $white;
             display: grid;
             grid-template-columns: 50px auto;
             grid-template-rows: auto auto;
             column-gap: 22px;
             margin-bottom: 10px;
+
+            &.selected {
+                border: 2px solid $successgreen;
+            }
+
+            &.service {
+                grid-template-columns: 50px 1fr auto;
+
+                .option-title {
+                    grid-column: 2 / 3;
+                }
+
+                .option-description {
+                    grid-column: 2 / 3;
+                }
+
+                .option-price {
+                    grid-column: 3 / 4;
+                    grid-row: 1 / 3;
+                    align-self: center;
+                }
+
+            }
 
             &-img {
                 width: 50px;
@@ -124,6 +161,215 @@ main {
                 line-height: 19px;
                 color: $lightgray;
             }
+
+            &-price {
+                font-size: 26px;
+                font-weight: 500;
+                line-height: 39px;
+                color: $darkergreen;
+            }
+        }
+
+        .date {
+            display: grid;
+            grid-template-columns: 1.214fr 1fr;
+            grid-template-rows: 1fr;
+            column-gap: 15px;
+            align-items: stretch;
+
+            &-calendar {
+                display: grid;
+                grid-template-columns: 1fr;
+                justify-items: center;
+
+                .navigator {
+                    display: flex;
+                    align-items: center;
+                    column-gap: 21px;
+                    margin-bottom: 17px;
+
+                    &-prev, &-next {
+                        width: 24px;
+                        height: 24px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        cursor: pointer;
+                        
+                        img {
+                            -webkit-user-drag: none;
+                            user-select: none;
+                        }
+                    }
+
+                    &-current {
+                        font-size: 14px;
+                        font-weight: 400;
+                        line-height: 21px;
+                    }
+                }
+                
+                &-main {
+                    width: 100%;
+                    background-color: $white;
+                    border-radius: 2px;
+
+                    .weekdays {
+                        display: grid;
+                        grid-template-columns: repeat(7, 1fr);
+                        align-items: center;
+                        border-bottom: 1px solid $divider;
+                        padding: 20px 16px 8px 16px;
+                        
+                        .weekday {
+                            font-size: 13px;
+                            line-height: 19.5px;
+                            text-align: center;
+                            color: $weekdaygray;
+                        }
+                    }
+
+                    .days {
+                        display: grid;
+                        grid-template-columns: repeat(7, 1fr);
+                        grid-template-rows: repeat(5, 1fr);
+                        column-gap: 10px;
+                        row-gap: 13px;
+                        padding: 12px 15px;
+
+                        .day {
+                            background-color: #ECEDF1;
+                            color: $daygray;
+                            text-align: center;
+                            font-size: 15px;
+                            line-height: 22.5px;
+                            aspect-ratio: 1/1;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+
+                            &.active {
+                                color: #111111;
+                                cursor: pointer;
+                            }
+                        }
+                    }
+                }
+            }
+
+            &-preview {
+                display: grid;
+                grid-template-rows: auto 1fr    ;
+
+                .title {
+                    font-size: 14px;
+                    line-height: 21px;
+                    margin-bottom: 19px;
+                    text-align: center;
+                }
+
+                &-main {
+                    font-size: 14px;
+                    line-height: 21px;
+                    background-color: $white;
+                    border-radius: 2px;
+
+                    .label {
+                        padding: 15px 0 13px 0;
+                        color: $purple;
+                        border-bottom: 1px solid $divider;
+                        text-align: center;
+                    }
+
+                    .times {
+                        display: grid;
+                        grid-template-columns: repeat(3, 1fr);
+                        column-gap: 10px;
+                        row-gap: 10px;
+                        padding: 12px 15px;
+
+                        .time {
+                            background: #ECEFF2;
+                            padding: 7px 0;
+                            color: #111111;
+                            text-align: center;
+                            cursor: pointer;
+    
+                            &.selected {
+                                background-color: $successgreen;
+                                color: $white;
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+    &-bottom {
+        border-top: 1px solid $divider;
+        display: grid;
+        grid-template-columns: 1.47fr 1fr;
+        justify-content: space-between;
+        padding: 20px 30px;
+        background-color: $white;
+
+        .left {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .info {
+            padding: 9px 14px;
+            background-color: $infoorange;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            column-gap: 10px;
+            grid-column: 1 / 2;
+
+            &-img {
+                width: 20px;
+                height: 20px;
+                -webkit-user-drag: none;
+                user-select: none;
+            }
+
+            &-text {
+                font-size: 12px;
+                font-weight: 600;
+                line-height: 18px;
+                color: $white;
+            }
+        }
+
+        .back, .next {
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 18px;
+            cursor: pointer;
+            padding: 9px 14px;
+            border-radius: 2px;
+        }
+
+        .back {
+            color: $textgray;
+            background-color: $btngray;
+            box-shadow: 0 0 0 2px #E3EAF3;
+            grid-column: 1 / 2;
+        }
+
+        .right {
+            display: flex;
+            justify-content: end;
+        }
+
+        .next {
+            display: inline-block;
+            color: #FFFFFF;
+            background-color: $purple;
         }
     }
 }

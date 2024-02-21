@@ -20,6 +20,8 @@ main {
 
 .sidebar {
   background-color: #292D32;
+  display: grid;
+  grid-template-rows: 1fr auto;
 }
 
 .progress {
@@ -33,14 +35,20 @@ main {
   align-items: center;
   -moz-column-gap: 12px;
        column-gap: 12px;
+  counter-increment: pinpoint-counter;
 }
-.progress .pinpoint.success .pinpoint-order {
+.progress .pinpoint.success::before {
   background-color: #53D56C;
 }
 .progress .pinpoint.success .pinpoint-label {
   color: #53D56C;
 }
-.progress .pinpoint-order {
+.progress .pinpoint.done::before {
+  content: url("./../images/okay.svg");
+  background-color: #6C70DC;
+}
+.progress .pinpoint::before {
+  content: counter(pinpoint-counter);
   width: 24px;
   height: 24px;
   color: #FFFFFF;
@@ -59,34 +67,56 @@ main {
   color: #626C76;
 }
 
+.bottom-space {
+  padding-bottom: 75px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .content {
   background-color: #F5F7FA;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
 }
-.content .topBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.content-top {
   border-bottom: 1px solid #E3EAF3;
   padding: 19px 25px 23px 30px;
 }
-.content .topBar .process-title {
+.content-top .process-title {
   font-size: 18px;
   font-weight: 500;
   line-height: 27px;
   color: #292D32;
 }
 .content-main {
-  padding: 25px 30px 0 30px;
+  padding: 25px 30px 42px 30px;
 }
 .content-main .option {
   padding: 15px 20px;
   background-color: #FFFFFF;
+  border: 2px solid #FFFFFF;
   display: grid;
   grid-template-columns: 50px auto;
   grid-template-rows: auto auto;
   -moz-column-gap: 22px;
        column-gap: 22px;
   margin-bottom: 10px;
+}
+.content-main .option.selected {
+  border: 2px solid #53D56C;
+}
+.content-main .option.service {
+  grid-template-columns: 50px 1fr auto;
+}
+.content-main .option.service .option-title {
+  grid-column: 2/3;
+}
+.content-main .option.service .option-description {
+  grid-column: 2/3;
+}
+.content-main .option.service .option-price {
+  grid-column: 3/4;
+  grid-row: 1/3;
+  align-self: center;
 }
 .content-main .option-img {
   width: 50px;
@@ -111,4 +141,192 @@ main {
   font-weight: 400;
   line-height: 19px;
   color: #828F9A;
+}
+.content-main .option-price {
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 39px;
+  color: #4FBF65;
+}
+.content-main .date {
+  display: grid;
+  grid-template-columns: 1.214fr 1fr;
+  grid-template-rows: 1fr;
+  -moz-column-gap: 15px;
+       column-gap: 15px;
+  align-items: stretch;
+}
+.content-main .date-calendar {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+}
+.content-main .date-calendar .navigator {
+  display: flex;
+  align-items: center;
+  -moz-column-gap: 21px;
+       column-gap: 21px;
+  margin-bottom: 17px;
+}
+.content-main .date-calendar .navigator-prev, .content-main .date-calendar .navigator-next {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.content-main .date-calendar .navigator-prev img, .content-main .date-calendar .navigator-next img {
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.content-main .date-calendar .navigator-current {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+}
+.content-main .date-calendar-main {
+  width: 100%;
+  background-color: #FFFFFF;
+  border-radius: 2px;
+}
+.content-main .date-calendar-main .weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  align-items: center;
+  border-bottom: 1px solid #E3EAF3;
+  padding: 20px 16px 8px 16px;
+}
+.content-main .date-calendar-main .weekdays .weekday {
+  font-size: 13px;
+  line-height: 19.5px;
+  text-align: center;
+  color: #C8C9CC;
+}
+.content-main .date-calendar-main .days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  -moz-column-gap: 10px;
+       column-gap: 10px;
+  row-gap: 13px;
+  padding: 12px 15px;
+}
+.content-main .date-calendar-main .days .day {
+  background-color: #ECEDF1;
+  color: #AAACAF;
+  text-align: center;
+  font-size: 15px;
+  line-height: 22.5px;
+  aspect-ratio: 1/1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.content-main .date-calendar-main .days .day.active {
+  color: #111111;
+  cursor: pointer;
+}
+.content-main .date-preview {
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+.content-main .date-preview .title {
+  font-size: 14px;
+  line-height: 21px;
+  margin-bottom: 19px;
+  text-align: center;
+}
+.content-main .date-preview-main {
+  font-size: 14px;
+  line-height: 21px;
+  background-color: #FFFFFF;
+  border-radius: 2px;
+}
+.content-main .date-preview-main .label {
+  padding: 15px 0 13px 0;
+  color: #6C70DC;
+  border-bottom: 1px solid #E3EAF3;
+  text-align: center;
+}
+.content-main .date-preview-main .times {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  -moz-column-gap: 10px;
+       column-gap: 10px;
+  row-gap: 10px;
+  padding: 12px 15px;
+}
+.content-main .date-preview-main .times .time {
+  background: #ECEFF2;
+  padding: 7px 0;
+  color: #111111;
+  text-align: center;
+  cursor: pointer;
+}
+.content-main .date-preview-main .times .time.selected {
+  background-color: #53D56C;
+  color: #FFFFFF;
+}
+.content-bottom {
+  border-top: 1px solid #E3EAF3;
+  display: grid;
+  grid-template-columns: 1.47fr 1fr;
+  justify-content: space-between;
+  padding: 20px 30px;
+  background-color: #FFFFFF;
+}
+.content-bottom .left {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.content-bottom .info {
+  padding: 9px 14px;
+  background-color: #F4BE6C;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  -moz-column-gap: 10px;
+       column-gap: 10px;
+  grid-column: 1/2;
+}
+.content-bottom .info-img {
+  width: 20px;
+  height: 20px;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.content-bottom .info-text {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  color: #FFFFFF;
+}
+.content-bottom .back, .content-bottom .next {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  cursor: pointer;
+  padding: 9px 14px;
+  border-radius: 2px;
+}
+.content-bottom .back {
+  color: #8F9CA7;
+  background-color: #f7f8fb;
+  box-shadow: 0 0 0 2px #E3EAF3;
+  grid-column: 1/2;
+}
+.content-bottom .right {
+  display: flex;
+  justify-content: end;
+}
+.content-bottom .next {
+  display: inline-block;
+  color: #FFFFFF;
+  background-color: #6C70DC;
 }/*# sourceMappingURL=main.css.map */
