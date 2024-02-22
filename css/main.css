@@ -293,7 +293,13 @@ main {
   -moz-column-gap: 10px;
        column-gap: 10px;
   grid-column: 1/2;
-  visibility: hidden;
+  transition: 0.2s;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  opacity: 0;
+  animation: appear 3s infinite;
+  animation-play-state: paused;
 }
 .content-bottom .info-img {
   width: 20px;
@@ -308,6 +314,20 @@ main {
   font-weight: 600;
   line-height: 18px;
   color: #FFFFFF;
+}
+@keyframes appear {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 .content-bottom .back, .content-bottom .next {
   font-size: 12px;

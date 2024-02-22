@@ -13,20 +13,27 @@ export class Reservation {
         console.log("loaded data");
     }
 
+    /* 
+        Visually smooth even when called multiple times 
+        by the user.
+    */
     giveWarning(text) {
         let infoBox = document.querySelector('.info');
-        let infoText = document.querySelector('.info-text');
-        infoBox.style.visibility = "visible";
-        infoText.innerText = text;
-        this.test = "teyst";
+        if(infoBox.style.animationPlayState == "paused" || infoBox.style.animationPlayState == "") {
+            let infoText = document.querySelector('.info-text');
+            infoBox.style.animationPlayState = "running";
+            infoText.innerText = text;
+            setTimeout(this.removeWarning, 3000);
+        }
     }
 
     removeWarning() {
         let infoBox = document.querySelector('.info');
-        infoBox.style.visibility = "hidden";
+        infoBox.style.animationPlayState = "paused";
     }
 
     start() {
+        // Display staff
         this.stage = 1;
         let contentBox = document.querySelector('#contentBox');
         this.staffs.forEach(staff => {
@@ -43,23 +50,13 @@ export class Reservation {
         let options = [...contentBox.children];
         options.forEach(option => {
             option.addEventListener('click', (e) => {
-                // if(this.staffSelected != e.target.closest('.option').getAttribute('data-id')) {
-                //     removeClasses(options);
-                // }
-                // e.target.closest('.option').classList.toggle("selected");
                 this.staffSelected = option.getAttribute("data-id");
             });
         });
+    }
 
-        //     function removeClasses(options) {
-        //         options.forEach(option => {
-        //             if(option.classList.contains("selected")) {
-        //                 option.classList.remove("selected");
-        //                 return;
-        //             }
-        //         })
-        //     }
-        // });
+    service() {
+        let contentBox = document.querySelector('#contentBox');
     }
 
     next = () => {

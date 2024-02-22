@@ -330,7 +330,11 @@ main {
             align-items: center;
             column-gap: 10px;
             grid-column: 1 / 2;
-            visibility: hidden;
+            transition: .2s;
+            user-select: none;
+            opacity: 0;
+            animation: appear 3s infinite;
+            animation-play-state: paused;
 
             &-img {
                 width: 20px;
@@ -344,6 +348,24 @@ main {
                 font-weight: 600;
                 line-height: 18px;
                 color: $white;
+            }
+
+            @keyframes appear {
+                0% {
+                    opacity: 0;
+                }
+
+                20% {
+                    opacity: 1;
+                }
+
+                80% {
+                    opacity: 1;
+                }
+
+                100% {
+                    opacity: 0;
+                }
             }
         }
 
