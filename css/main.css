@@ -36,12 +36,19 @@ main {
   -moz-column-gap: 12px;
        column-gap: 12px;
   counter-increment: pinpoint-counter;
+  cursor: not-allowed;
+}
+.progress .pinpoint.current {
+  cursor: pointer;
 }
 .progress .pinpoint.current::before {
   background-color: #53D56C;
 }
 .progress .pinpoint.current .pinpoint-label {
   color: #53D56C;
+}
+.progress .pinpoint.done {
+  cursor: pointer;
 }
 .progress .pinpoint.done::before {
   content: url("./../images/okay.svg");
@@ -90,6 +97,14 @@ main {
 .content-main {
   padding: 25px 30px 42px 30px;
 }
+@keyframes contentAppear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 .content-main .option {
   padding: 15px 20px;
   background-color: #FFFFFF;
@@ -101,6 +116,8 @@ main {
        column-gap: 22px;
   margin-bottom: 10px;
   cursor: pointer;
+  opacity: 0;
+  animation: contentAppear 1.3s forwards;
 }
 .content-main .option.selected {
   border: 2px solid #53D56C;
@@ -150,12 +167,14 @@ main {
   color: #4FBF65;
 }
 .content-main .date {
-  display: grid;
+  display: none;
   grid-template-columns: 1.214fr 1fr;
   grid-template-rows: 1fr;
   -moz-column-gap: 15px;
        column-gap: 15px;
   align-items: stretch;
+  opacity: 0;
+  animation: contentAppear 1.3s forwards;
 }
 .content-main .date-calendar {
   display: grid;

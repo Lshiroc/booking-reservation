@@ -37,8 +37,11 @@ main {
         align-items: center;
         column-gap: 12px;
         counter-increment: pinpoint-counter;
+        cursor: not-allowed;
 
         &.current {
+            cursor: pointer;
+
             &::before {
                 background-color: $successgreen;
             }          
@@ -46,6 +49,10 @@ main {
             .pinpoint-label {
                 color: $successgreen;
             }
+        }
+
+        &.done {
+            cursor: pointer;
         }
 
         &.done::before {
@@ -101,6 +108,16 @@ main {
     &-main {
         padding: 25px 30px 42px 30px;
 
+        @keyframes contentAppear{
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
         .option {
             padding: 15px 20px;
             background-color: $white;
@@ -111,7 +128,9 @@ main {
             column-gap: 22px;
             margin-bottom: 10px;
             cursor: pointer;
-
+            opacity: 0;
+            animation: contentAppear 1.3s forwards;
+            
             &.selected {
                 border: 2px solid $successgreen;
             }
@@ -172,11 +191,13 @@ main {
         }
 
         .date {
-            display: grid;
+            display: none;
             grid-template-columns: 1.214fr 1fr;
             grid-template-rows: 1fr;
             column-gap: 15px;
             align-items: stretch;
+            opacity: 0;
+            animation: contentAppear 1.3s forwards;
 
             &-calendar {
                 display: grid;
