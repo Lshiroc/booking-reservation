@@ -182,11 +182,13 @@ main {
   justify-items: center;
 }
 .content-main .date-calendar .navigator {
+  width: 210px;
   display: flex;
   align-items: center;
   -moz-column-gap: 21px;
        column-gap: 21px;
   margin-bottom: 17px;
+  justify-content: space-between;
 }
 .content-main .date-calendar .navigator-prev, .content-main .date-calendar .navigator-next {
   width: 24px;
@@ -228,7 +230,6 @@ main {
 .content-main .date-calendar-main .days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(5, 1fr);
   -moz-column-gap: 10px;
        column-gap: 10px;
   row-gap: 13px;
@@ -248,6 +249,10 @@ main {
 .content-main .date-calendar-main .days .day.active {
   color: #111111;
   cursor: pointer;
+}
+.content-main .date-calendar-main .days .day.selected {
+  background-color: #6C70DC;
+  color: #FFFFFF;
 }
 .content-main .date-preview {
   display: grid;

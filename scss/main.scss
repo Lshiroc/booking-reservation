@@ -205,10 +205,12 @@ main {
                 justify-items: center;
 
                 .navigator {
+                    width: 210px;
                     display: flex;
                     align-items: center;
                     column-gap: 21px;
                     margin-bottom: 17px;
+                    justify-content: space-between;
 
                     &-prev, &-next {
                         width: 24px;
@@ -254,7 +256,6 @@ main {
                     .days {
                         display: grid;
                         grid-template-columns: repeat(7, 1fr);
-                        grid-template-rows: repeat(5, 1fr);
                         column-gap: 10px;
                         row-gap: 13px;
                         padding: 12px 15px;
@@ -273,6 +274,11 @@ main {
                             &.active {
                                 color: #111111;
                                 cursor: pointer;
+                            }
+
+                            &.selected {
+                                background-color: #6C70DC;
+                                color: $white;
                             }
                         }
                     }

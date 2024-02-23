@@ -2,6 +2,7 @@ export class Reservation {
     constructor() {
         console.log("constructed object");
         document.querySelector('#nextBtn').addEventListener('click', this.next);
+        this.currentDate = new Date();
     }
 
     // Load the required data
@@ -78,25 +79,50 @@ export class Reservation {
         options.forEach(option => {
             option.addEventListener('click', (e) => {
                 this.serviceSelected = option.getAttribute("data-id");
-                this.date();
+                this.datePick();
             });
         })
     }
 
-    date() {
+    datePick() {
         this.stage = 3;
         document.querySelector('#optionsContainer').innerHTML = '';
         let dateContainer = document.querySelector('#dateContainer');
         dateContainer.style.display = 'grid';
-        let currentDate = new Date();
-        updateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-
+        updateCalendar(this.currentDate.getFullYear(), this.currentDate.getMonth(), this.currentDate, this.dates);
+        
         document.querySelector('#nextDate').addEventListener('click', () => {
-            updateCalendar(2024, 2);
+            let month = parseInt(dateLabel.getAttribute('data-month'));
+            let year = parseInt(dateLabel.getAttribute('data-year'));
+            if(month > 11) {
+                month = 0;
+                year++;
+            } else {
+                month++;
+            }
+            this.currentDate = new Date(year, month, 1);
+            updateCalendar(year, month, this.currentDate, this.dates);
         })
 
-        function updateCalendar(year, month) {
+        document.querySelector('#backDate').addEventListener('click', () => {
+            let month = parseInt(dateLabel.getAttribute('data-month'));
+            let year = parseInt(dateLabel.getAttribute('data-year'));
+            if(month <= 0) {
+                month = 11;
+                year--;
+            } else {
+                month--;
+            }
+            this.currentDate = new Date(year, month, 1);
+            updateCalendar(year, month, this.currentDate, this.dates);
+        })
+
+        function updateCalendar(year, month, currentDate, dates) {
             // Check which weekday is the first day of current month
+            let dateLabel = document.querySelector('#dateLabel')
+            dateLabel.setAttribute('data-year', currentDate.getFullYear());
+            dateLabel.setAttribute('data-month', currentDate.getMonth());
+            dateLabel.innerText = currentDate.toLocaleString("en-US", {month: 'long'}) +  " " + currentDate.getFullYear();
             let startWeekday = new Date(year, month, 1).getDay();
             let maxDays = new Date(year, month+1, 0).getDate();
             let daysContainer = document.querySelector("#daysContainer");
@@ -109,13 +135,31 @@ export class Reservation {
                     <div></div>
                     `;
                 } else {
-                    daysContainer.innerHTML += 
-                    `
-                    <div class="day">${j}</div>
-                    `;
+                    let formattedDate = [currentDate.getFullYear(), String(currentDate.getMonth()+1).padStart(2, '0'), String(j).padStart(2, '0')].join('-');
+                    let day = document.createElement('div');
+                    day.classList.add('day');
+                    if(dates.includes(formattedDate)) {
+                        day.classList.add('active')
+                    }
+                    
+                    day.innerText = j;
+                    day.addEventListener('click', (e) => {
+                        if(e.target.classList.contains('active')) {
+                            let alreadySelected = document.querySelector('.day.selected');
+                            if(alreadySelected && alreadySelected != e.target) {
+                                alreadySelected.classList.remove('selected');
+                            }
+                            e.target.classList.toggle('selected');
+                        }
+                    })
+                    daysContainer.append(day);
                     j++;
                 }
             }
+        }
+
+        function chooseDate() {
+            
         }
     }
 
