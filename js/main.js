@@ -53,5 +53,3 @@ let resv = new Reservation();
 
 resv.load(staffs, services, date, time);
 
-resv.start();
-

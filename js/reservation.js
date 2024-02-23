@@ -1,7 +1,7 @@
 export class Reservation {
     constructor() {
-        console.log("constructed object");
         document.querySelector('#nextBtn').addEventListener('click', this.next);
+        document.querySelector('#backBtn').addEventListener('click', this.back);
         this.currentDate = new Date();
     }
 
@@ -11,7 +11,8 @@ export class Reservation {
         this.services = services;
         this.dates = dates;
         this.times = time;
-        console.log("loaded data");
+        this.stage = 1;
+        this.stageChange(1);
     }
 
     /*
@@ -46,14 +47,34 @@ export class Reservation {
         clean step-by-step approach.
     */
 
+    stageChange(stage, thisStage) {
+        console.log(stage)
+        thisStage = stage;
+        switch(stage) {
+            case 1:
+                this.chooseStaff();
+                break;
+            case 2:
+                this.service();
+                break;
+            case 3:
+                this.datePick();
+                break;
+            case 4:
+                this.confirmation();
+                break;
+        }
+    }
 
     // Stage 1
-    start() {
+    chooseStaff() {
         this.stage = 1;
         let container = document.querySelector('#optionsContainer');
+        container.innerHTML = '';
+        document.querySelector('#dateContainer').style.display = 'none';
         this.staffs.forEach(staff => {
             container.innerHTML += 
-                `<div data-id='${staff.id}' class="option">
+                `<div data-id='${staff.id}' class="option ${this.staffSelected == staff.id && 'selected'}">
                     <div class="option-img">
                         <img src="./images/${staff.image}" alt="${staff.name}" />
                     </div>
@@ -66,7 +87,7 @@ export class Reservation {
         options.forEach(option => {
             option.addEventListener('click', (e) => {
                 this.staffSelected = option.getAttribute("data-id");
-                this.service();
+                this.stageChange(2);
             });
         });
     }
@@ -76,10 +97,11 @@ export class Reservation {
         this.stage = 2;
         let container = document.querySelector('#optionsContainer');
         container.innerHTML = '';
+        document.querySelector('#dateContainer').style.display = 'none';
         this.services.forEach(service => {
             container.innerHTML += 
             `
-            <div data-id='${service.id}' class="option service">
+            <div data-id='${service.id}' class="option service ${this.serviceSelected == service.id && 'selected'}">
                 <div class="option-img">
                     <img src="./images/${service.image}" alt="${service.name}" />
                 </div>
@@ -94,19 +116,19 @@ export class Reservation {
         options.forEach(option => {
             option.addEventListener('click', (e) => {
                 this.serviceSelected = option.getAttribute("data-id");
-                this.datePick();
+                this.stageChange(3);
             });
         })
     }
 
     // Stage 3
-    datePick() {
+    async datePick() {
         this.stage = 3;
         document.querySelector('#optionsContainer').innerHTML = '';
         let dateContainer = document.querySelector('#dateContainer');
         dateContainer.style.display = 'grid';
-        updateCalendar(this.currentDate.getFullYear(), this.currentDate.getMonth(), this.currentDate, this.dates, this.times);
-        
+        updateCalendar(this.currentDate.getFullYear(), this.currentDate.getMonth(), this.currentDate, this.dates, this.times, this.dateTimeSelected, this.stageChange, this.stage);
+
         document.querySelector('#nextDate').addEventListener('click', () => {
             let month = parseInt(dateLabel.getAttribute('data-month'));
             let year = parseInt(dateLabel.getAttribute('data-year'));
@@ -117,7 +139,7 @@ export class Reservation {
                 month++;
             }
             this.currentDate = new Date(year, month, 1);
-            updateCalendar(year, month, this.currentDate, this.dates, this.times);
+            updateCalendar(year, month, this.currentDate, this.dates, this.times, this.dateTimeSelected, this.stageChange, this.stage);
         })
 
         document.querySelector('#backDate').addEventListener('click', () => {
@@ -130,10 +152,10 @@ export class Reservation {
                 month--;
             }
             this.currentDate = new Date(year, month, 1);
-            updateCalendar(year, month, this.currentDate, this.dates, this.times);
+            updateCalendar(year, month, this.currentDate, this.dates, this.times, this.dateTimeSelected, this.stageChange, this.stage);
         })
 
-        function updateCalendar(year, month, currentDate, dates, times) {
+        function updateCalendar(year, month, currentDate, dates, times, dateTimeSelected, stageChange, thisStage) {
             // Check which weekday is the first day of current month
             let dateLabel = document.querySelector('#dateLabel')
             dateLabel.setAttribute('data-year', currentDate.getFullYear());
@@ -160,6 +182,10 @@ export class Reservation {
                     
                     day.innerText = j;
                     if(day.classList.contains('active')) {
+                        dateTimeSelected = {
+                            date: j,
+                            time: null
+                        }
                         day.addEventListener('click', (e) => {
                             let alreadySelected = document.querySelector('.day.selected');
                             let timesContainer = document.querySelector('#timesContainer');
@@ -182,7 +208,12 @@ export class Reservation {
                                     timeItem.classList.add('time');
                                     timeItem.innerHTML = `${time.start_time}<br/>${time.end_time}`;
                                     timeItem.addEventListener('click', () => {
+                                        dateTimeSelected['time'] = `${time.start_time} ${time.end_time}`;
+                                        stageChange(4, thisStage);
                                     })
+                                    if(dateTimeSelected['date'] == j && dateTimeSelected['time'] == `${time.start_time} ${time.end_time}`) {
+                                        day.classList.add('selected');
+                                    }
                                     timesContainer.append(timeItem);
                                 })
                             }
@@ -193,10 +224,13 @@ export class Reservation {
                 }
             }
         }
+    }
 
-        function chooseDate() {
-            
-        }
+    // Stage 4
+    confirmation() {
+        this.stage = 4;
+        console.log("stage 4...");
+        document.querySelector('#dateContainer').style.display = 'none';
     }
 
     next = () => {
@@ -208,6 +242,23 @@ export class Reservation {
             this.giveWarning('Select service');
         } else if(this.stage == 3 && !this.dateTimeSelected) {
             this.giveWarning('Select date & time');
+        }
+    }
+
+    back = () => {
+        switch(this.stage) {
+            case 1:
+                console.log("not possible");
+                break;
+            case 2:
+                this.stageChange(1);
+                break;
+            case 3:
+                this.stageChange(2);
+                break;
+            case 4:
+                this.stageChange(3);
+                break;
         }
     }
 }
