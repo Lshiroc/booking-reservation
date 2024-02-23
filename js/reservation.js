@@ -10,7 +10,7 @@ export class Reservation {
         this.staffs = staffs;
         this.services = services;
         this.dates = dates;
-        this.time = time;
+        this.times = time;
         console.log("loaded data");
     }
 
@@ -89,7 +89,7 @@ export class Reservation {
         document.querySelector('#optionsContainer').innerHTML = '';
         let dateContainer = document.querySelector('#dateContainer');
         dateContainer.style.display = 'grid';
-        updateCalendar(this.currentDate.getFullYear(), this.currentDate.getMonth(), this.currentDate, this.dates);
+        updateCalendar(this.currentDate.getFullYear(), this.currentDate.getMonth(), this.currentDate, this.dates, this.times);
         
         document.querySelector('#nextDate').addEventListener('click', () => {
             let month = parseInt(dateLabel.getAttribute('data-month'));
@@ -101,7 +101,7 @@ export class Reservation {
                 month++;
             }
             this.currentDate = new Date(year, month, 1);
-            updateCalendar(year, month, this.currentDate, this.dates);
+            updateCalendar(year, month, this.currentDate, this.dates, this.times);
         })
 
         document.querySelector('#backDate').addEventListener('click', () => {
@@ -114,10 +114,10 @@ export class Reservation {
                 month--;
             }
             this.currentDate = new Date(year, month, 1);
-            updateCalendar(year, month, this.currentDate, this.dates);
+            updateCalendar(year, month, this.currentDate, this.dates, this.times);
         })
 
-        function updateCalendar(year, month, currentDate, dates) {
+        function updateCalendar(year, month, currentDate, dates, times) {
             // Check which weekday is the first day of current month
             let dateLabel = document.querySelector('#dateLabel')
             dateLabel.setAttribute('data-year', currentDate.getFullYear());
@@ -143,15 +143,35 @@ export class Reservation {
                     }
                     
                     day.innerText = j;
-                    day.addEventListener('click', (e) => {
-                        if(e.target.classList.contains('active')) {
+                    if(day.classList.contains('active')) {
+                        day.addEventListener('click', (e) => {
                             let alreadySelected = document.querySelector('.day.selected');
+                            let timesContainer = document.querySelector('#timesContainer');
+                            let timeLabel = document.querySelector('#timeLabel');
+
                             if(alreadySelected && alreadySelected != e.target) {
                                 alreadySelected.classList.remove('selected');
+                                timeLabel.innerText = "Select date";
+                                timesContainer.innerHTML = '';
                             }
-                            e.target.classList.toggle('selected');
-                        }
-                    })
+                            if(e.target.classList.contains('selected')) {
+                                timesContainer.innerHTML = '';
+                                timeLabel.innerText = "Select date";
+                                e.target.classList.remove('selected');
+                            } else {
+                                e.target.classList.add('selected');
+                                timeLabel.innerText = [year, String(month).padStart(2, '0'), String(e.target.innerText).padStart(2, '0')].join('-');
+                                times.forEach(time => {
+                                    let timeItem = document.createElement('div');
+                                    timeItem.classList.add('time');
+                                    timeItem.innerHTML = `${time.start_time}<br/>${time.end_time}`;
+                                    timeItem.addEventListener('click', () => {
+                                    })
+                                    timesContainer.append(timeItem);
+                                })
+                            }
+                        })
+                    }
                     daysContainer.append(day);
                     j++;
                 }
