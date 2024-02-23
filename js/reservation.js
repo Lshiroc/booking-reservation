@@ -33,8 +33,22 @@ export class Reservation {
         infoBox.style.animationPlayState = "paused";
     }
 
+    /*
+    stage 1 = Staff
+    stage 2 = Service
+    stage 3 = Date & Time
+    stage 4 = Connfirmation
+    */
+
+    /*
+        TODO: instead of going through every stage
+        with nesting them, make a promise for more
+        clean step-by-step approach.
+    */
+
+
+    // Stage 1
     start() {
-        // Display staff
         this.stage = 1;
         let container = document.querySelector('#optionsContainer');
         this.staffs.forEach(staff => {
@@ -57,6 +71,7 @@ export class Reservation {
         });
     }
 
+    // Stage 2
     service() {
         this.stage = 2;
         let container = document.querySelector('#optionsContainer');
@@ -84,6 +99,7 @@ export class Reservation {
         })
     }
 
+    // Stage 3
     datePick() {
         this.stage = 3;
         document.querySelector('#optionsContainer').innerHTML = '';
@@ -187,9 +203,11 @@ export class Reservation {
         if((this.stage == 1 && this.staffSelected) || (this.stage == 2 && this.serviceSelected)) {
             this.removeWarning();
         } else if(this.stage == 1 && !this.staffSelected) {
-            this.giveWarning("SELECT STAFF")
+            this.giveWarning("Select staff");
         } else if(this.stage == 2 && !this.serviceSelected) {
-            this.giveWarning('SELECT SERVICE')
+            this.giveWarning('Select service');
+        } else if(this.stage == 3 && !this.dateTimeSelected) {
+            this.giveWarning('Select date & time');
         }
     }
 }

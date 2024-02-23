@@ -338,6 +338,7 @@ main {
   font-weight: 600;
   line-height: 18px;
   color: #FFFFFF;
+  text-transform: uppercase;
 }
 @keyframes appear {
   0% {
