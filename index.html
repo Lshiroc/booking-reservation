@@ -9,6 +9,14 @@
 </head>
 <body>
     <main>
+        <div class="notificationContainer">
+            <div class="notification">
+                <div class="notificationCloseBtn">
+                    <img src="./images/close2.svg" alt="Close" />
+                </div>
+                <p class="notificationText">Please, fill the all required fields</p>
+            </div>
+        </div>
         <div class="reservation-container">
             <div class="sidebar">
                 <div class="progress">
@@ -63,6 +71,45 @@
                             <div class="date-preview-main">
                                 <div id="timeLabel" class="label">Select date</div>
                                 <div id="timesContainer" class="times"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="confirmationForm" class="confirmation">
+                        <div class="formItem">
+                            <label for="nameInp">First name <span class="important">*</span></label><br/>
+                            <input id="nameInp" name="firstname" class="formInput" type="text" />
+                        </div>
+                        <div class="formItem">
+                            <label for="lastInp">Last name <span>*</span></label><br/>
+                            <input id="lastInp" name="lastname" class="formInput" type="text" />
+                        </div>
+                        <div class="formItem">
+                            <label for="emailInp">E-mail <span>*</span></label><br/>
+                            <input id="emailInp" name="email" class="formInput" type="text" />
+                        </div>
+                        <div class="formItem">
+                            <label for="phoneInp">Phone</label><br/>
+                            <input id="phoneInp" name="phone" class="formInput" type="text" />
+                        </div>
+                        <div class="formItem">
+                            <label>Note</label>
+                            <div id="noteBox" class="noteBox">
+                                <div class="noteItem">
+                                    <p class="noteItem-label">Staff:</p>
+                                    <p id="noteStaff" class="noteItem-value"></p>
+                                </div>
+                                <div class="noteItem">
+                                    <p class="noteItem-label">Service:</p>
+                                    <p id="noteService" class="noteItem-value"></p>
+                                </div>
+                                <div class="noteItem">
+                                    <p class="noteItem-label">Date:</p>
+                                    <p id="noteDateTime" class="noteItem-value"></p>
+                                </div>
+                                <div class="noteItem">
+                                    <p class="noteItem-label">Total:</p>
+                                    <p id="noteTotal" class="noteItem-value-price"></p>
+                                </div>
                             </div>
                         </div>
                     </div>

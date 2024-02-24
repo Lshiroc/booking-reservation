@@ -2,8 +2,10 @@ export class Reservation {
     constructor() {
         document.querySelector('#nextBtn').addEventListener('click', this.next);
         document.querySelector('#backBtn').addEventListener('click', this.back);
+        document.querySelector('.notificationCloseBtn').addEventListener('click', this.removeNotification);
         this.currentDate = new Date();
         this.dateTimeSelected = {date: null, time: null};
+        this.switchStages();
     }
 
     // Load the required data
@@ -16,10 +18,7 @@ export class Reservation {
         this.stageChange(1);
     }
 
-    /*
-        Visually smooth even when called multiple times 
-        by the user.
-    */
+    // Display small warning box
     giveWarning(text) {
         let infoBox = document.querySelector('.info');
         if(infoBox.style.animationPlayState == "paused" || infoBox.style.animationPlayState == "") {
@@ -30,9 +29,34 @@ export class Reservation {
         }
     }
 
+    // Remove warning Box
     removeWarning() {
         let infoBox = document.querySelector('.info');
         infoBox.style.animationPlayState = "paused";
+    }
+
+    // Display the modal for Notification
+    giveNotification(text, success) {
+        document.querySelector('.notificationText').innerText = text;
+        if(success) {
+            document.querySelector('.notificationText').style.color = '#38CF78';
+        } else {
+            document.querySelector('.notificationText').style.color = '#F39C12';
+        }
+        let notificationContainer = document.querySelector('.notificationContainer');
+        notificationContainer.style.animation = 'notificationBackgroundOn .4s forwards';
+        setTimeout(() => {
+            document.querySelector('.notification').style.animation = 'notificatonAppear .7s forwards';
+        }, 400);
+    }
+
+    // Remove the modal for Notification
+    removeNotification = () => {
+        document.querySelector('.notification').style.animation = 'notificatonDisappear .7s forwards';
+        setTimeout(() => {
+            let notificationContainer = document.querySelector('.notificationContainer');
+            notificationContainer.style.animation = 'notificationBackgroundOff .4s forwards';
+        }, 700);
     }
 
     /*
@@ -42,20 +66,52 @@ export class Reservation {
     stage 4 = Connfirmation
     */
 
+    /*
+    Generally manage switch process between stages.
+    Handles the change on different elements when stage changes. 
+    */
     stageChange(stage) {
         this.stage = stage;
+        if(this.stage == 1) {
+            document.querySelector('.left').classList.add('noBack'); 
+        } else {
+            document.querySelector('.left').classList.remove('noBack');  
+        }
+
+        let pinpoints = document.querySelectorAll('.pinpoint');
         switch(stage) {
             case 1:
                 this.chooseStaff();
+                document.querySelector('#nextBtn').innerText = 'Next';
+                pinpoints[0].classList.add('current');
+                pinpoints[0].classList.remove('done');
+                pinpoints[1].classList.remove('current');
                 break;
             case 2:
                 this.service();
+                document.querySelector('#nextBtn').innerText = 'Next';
+                pinpoints[0].classList.remove('current');
+                pinpoints[0].classList.add('done');
+                pinpoints[1].classList.add('current');
+                pinpoints[1].classList.remove('done');
+                pinpoints[2].classList.remove('current');
                 break;
             case 3:
                 this.datePick();
+                document.querySelector('#nextBtn').innerText = 'Next';
+                pinpoints[1].classList.remove('current');
+                pinpoints[1].classList.add('done');
+                pinpoints[2].classList.add('current');
+                pinpoints[2].classList.remove('done');
+                pinpoints[3].classList.remove('current');
                 break;
             case 4:
                 this.confirmation();
+                document.querySelector('#nextBtn').innerText = 'Confirm Booking';
+                pinpoints[2].classList.remove('current');
+                pinpoints[2].classList.add('done');
+                pinpoints[3].classList.add('current');
+                pinpoints[3].classList.remove('done');
                 break;
         }
     }
@@ -66,6 +122,7 @@ export class Reservation {
         let container = document.querySelector('#optionsContainer');
         container.innerHTML = '';
         document.querySelector('#dateContainer').style.display = 'none';
+        document.querySelector('#confirmationForm').style.display = 'none';
         this.staffs.forEach(staff => {
             container.innerHTML += 
                 `<div data-id='${staff.id}' class="option ${this.staffSelected == staff.id && 'selected'}">
@@ -82,6 +139,7 @@ export class Reservation {
             option.addEventListener('click', (e) => {
                 this.staffSelected = option.getAttribute("data-id");
                 this.serviceSelected = null;
+                this.price = null;
                 this.dateTimeSelected = {};
                 document.querySelector('#daysContainer').removeAttribute('data-date');
                 this.stageChange(2);
@@ -95,10 +153,11 @@ export class Reservation {
         let container = document.querySelector('#optionsContainer');
         container.innerHTML = '';
         document.querySelector('#dateContainer').style.display = 'none';
+        document.querySelector('#confirmationForm').style.display = 'none';
         this.services.forEach(service => {
             container.innerHTML += 
             `
-            <div data-id='${service.id}' class="option service ${this.serviceSelected == service.id && 'selected'}">
+            <div data-id='${service.id}' data-price='${service.price}' class="option service ${this.serviceSelected == service.id && 'selected'}">
                 <div class="option-img">
                     <img src="./images/${service.image}" alt="${service.name}" />
                 </div>
@@ -113,6 +172,7 @@ export class Reservation {
         options.forEach(option => {
             option.addEventListener('click', (e) => {
                 this.serviceSelected = option.getAttribute("data-id");
+                this.price = option.getAttribute("data-price");
                 this.dateTimeSelected = {};
                 document.querySelector('#daysContainer').removeAttribute('data-date');
                 this.stageChange(3);
@@ -123,6 +183,7 @@ export class Reservation {
     // Stage 3
     datePick() {
         this.stage = 3;
+        document.querySelector('#confirmationForm').style.display = 'none';
         document.querySelector('#optionsContainer').innerHTML = '';
         let dateContainer = document.querySelector('#dateContainer');
         dateContainer.style.display = 'grid';
@@ -155,8 +216,22 @@ export class Reservation {
         })
     }
 
+    // Stage 4
+    confirmation() {
+        this.stage = 4;
+        document.querySelector('#dateContainer').style.display = 'none';
+        let confirmationContainer = document.querySelector('#confirmationForm');
+        confirmationContainer.style.display = 'grid';
+        // let infoBox = documen.querySelector('#infoBox');
+        document.querySelector('#noteStaff').innerText = this.staffs.find(staff => staff.id == this.staffSelected).name;
+        document.querySelector('#noteService').innerText = this.services.find(service => service.id == this.serviceSelected).name;
+        document.querySelector('#noteDateTime').innerText = this.dateTimeSelected['date'] + " / " + this.dateTimeSelected['time'].replace(' ', '-');
+        document.querySelector('#noteTotal').innerText = `$${this.price}`;
+    }
+
+    // Visually update the calendar and time table, when it is changed by the user
+    // Needed for Stage 4
     updateCalendar(year, month) {
-        console.log("updateing...")
         // Check which weekday is the first day of current month
         let dateLabel = document.querySelector('#dateLabel');
         let timesContainer = document.querySelector('#timesContainer');
@@ -210,6 +285,7 @@ export class Reservation {
                                 timeItem.innerHTML = `${time.start_time}<br/>${time.end_time}`;
                                 timeItem.addEventListener('click', () => {
                                     this.dateTimeSelected['time'] = `${time.start_time} ${time.end_time}`;
+                                    this.dateTimeSelected['start_time'] = time.start_time;
                                     this.stageChange(4);
                                 })
                                 timeItem.setAttribute('data-time', `${time.start_time} ${time.end_time}`);
@@ -219,7 +295,6 @@ export class Reservation {
                     })
                     let checkTimeItem = document.querySelector(`[data-time="${this.dateTimeSelected['time']}"]`);
                     if(this.dateTimeSelected['date'] == fullDate && checkTimeItem) {
-                        console.log("ehememe")
                         day.classList.add('selected');
                         checkTimeItem.classList.add('selected');
                     } else if(!this.dateTimeSelected['date'] || !this.dateTimeSelected['time']) {
@@ -233,13 +308,32 @@ export class Reservation {
         }
     }
 
-    // Stage 4
-    confirmation() {
-        this.stage = 4;
-        console.log("stage 4...");
-        document.querySelector('#dateContainer').style.display = 'none';
+    // Check if the form is valid
+    checkForm() {
+        let firstname = document.getElementsByName('firstname')[0].value.trim();
+        let lastname = document.getElementsByName('lastname')[0].value.trim();
+        let email = document.getElementsByName('email')[0].value.trim();
+        let phone = document.getElementsByName('phone')[0].value.trim();
+        if(firstname == '' || lastname == '' || email == '') {
+            this.giveNotification('Please, fill all the required fields!', false);
+        } else {
+            this.giveNotification('Confirmation successfully completed!', true);
+            let final = {
+                staff_id: this.staffSelected,
+                service_id: this.serviceSelected,
+                date: this.dateTimeSelected['date'],
+                time: this.dateTimeSelected['start_time'],
+                customer: {
+                    name: firstname,
+                    surname: lastname,
+                    email: email,
+                    phone: phone
+                }
+            }
+        }
     }
 
+    // Switch to next section when clicked on NEXT button
     next = () => {
         switch(this.stage){
             case 1:
@@ -266,6 +360,9 @@ export class Reservation {
                     this.stageChange(4);
                 }
                 break;
+            case 4:
+                this.checkForm();
+                break;
         }
         if((this.stage == 1 && this.staffSelected) || (this.stage == 2 && this.serviceSelected)) {
             this.removeWarning();
@@ -277,11 +374,11 @@ export class Reservation {
             this.giveWarning('Select date & time');
         }
     }
-
+    
+    // Switch to previous section when clicked on BACK button
     back = () => {
         switch(this.stage) {
             case 1:
-                console.log("not possible");
                 break;
             case 2:
                 this.stageChange(1);
@@ -293,5 +390,23 @@ export class Reservation {
                 this.stageChange(3);
                 break;
         }
+    }
+
+    // Manage user click on progress pinpoints
+    switchStages() {
+        let allStages = document.querySelectorAll('.pinpoint');
+        allStages.forEach((stage, index) => {
+            stage.addEventListener('click', () => {
+                if(index < this.stage-1) {
+                    allStages.forEach((stage, index2) => {
+                        if(index2 > index) {
+                            stage.classList.remove('done');
+                            stage.classList.remove('current');
+                        }
+                    })
+                    this.stageChange(index+1);
+                }
+            })
+        })
     }
 }
