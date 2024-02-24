@@ -1,8 +1,11 @@
 export class Reservation {
     constructor() {
+        // Separate onclick events for necessery DOM elements
         document.querySelector('#nextBtn').addEventListener('click', this.next);
         document.querySelector('#backBtn').addEventListener('click', this.back);
         document.querySelector('.notificationCloseBtn').addEventListener('click', this.removeNotification);
+        
+        // Initialization of some veriables
         this.currentDate = new Date();
         this.dateTimeSelected = {date: null, time: null};
         this.switchStages();
@@ -60,15 +63,15 @@ export class Reservation {
     }
 
     /*
-    stage 1 = Staff
-    stage 2 = Service
-    stage 3 = Date & Time
-    stage 4 = Connfirmation
+        stage 1 = Staff
+        stage 2 = Service
+        stage 3 = Date & Time
+        stage 4 = Connfirmation
     */
 
     /*
-    Generally manage switch process between stages.
-    Handles the change on different elements when stage changes. 
+        Generally manage switch process between stages.
+        Handles the change on different elements when stage changes. 
     */
     stageChange(stage) {
         this.stage = stage;
@@ -79,9 +82,11 @@ export class Reservation {
         }
 
         let pinpoints = document.querySelectorAll('.pinpoint');
+        let processTitle = document.querySelector('#processTitle');
         switch(stage) {
             case 1:
                 this.chooseStaff();
+                processTitle.innerText = 'Select staff';
                 document.querySelector('#nextBtn').innerText = 'Next';
                 pinpoints[0].classList.add('current');
                 pinpoints[0].classList.remove('done');
@@ -89,6 +94,7 @@ export class Reservation {
                 break;
             case 2:
                 this.service();
+                processTitle.innerText = 'Select service';
                 document.querySelector('#nextBtn').innerText = 'Next';
                 pinpoints[0].classList.remove('current');
                 pinpoints[0].classList.add('done');
@@ -98,6 +104,7 @@ export class Reservation {
                 break;
             case 3:
                 this.datePick();
+                processTitle.innerText = 'Select date & time';
                 document.querySelector('#nextBtn').innerText = 'Next';
                 pinpoints[1].classList.remove('current');
                 pinpoints[1].classList.add('done');
@@ -107,6 +114,7 @@ export class Reservation {
                 break;
             case 4:
                 this.confirmation();
+                processTitle.innerText = 'Confirm detailes';
                 document.querySelector('#nextBtn').innerText = 'Confirm Booking';
                 pinpoints[2].classList.remove('current');
                 pinpoints[2].classList.add('done');
@@ -118,11 +126,12 @@ export class Reservation {
 
     // Stage 1
     chooseStaff() {
+        // Set & Reset necessary variables, elements
         this.stage = 1;
         let container = document.querySelector('#optionsContainer');
-        container.innerHTML = '';
-        document.querySelector('#dateContainer').style.display = 'none';
-        document.querySelector('#confirmationForm').style.display = 'none';
+        this.elementReset();
+        
+        // Display Options
         this.staffs.forEach(staff => {
             container.innerHTML += 
                 `<div data-id='${staff.id}' class="option ${this.staffSelected == staff.id && 'selected'}">
@@ -134,6 +143,7 @@ export class Reservation {
                 </div>`;
         });
 
+        // Add click event for every option
         let options = [...container.children];
         options.forEach(option => {
             option.addEventListener('click', (e) => {
@@ -149,11 +159,12 @@ export class Reservation {
 
     // Stage 2
     service() {
+        // Set & Reset necessary variables, elements
         this.stage = 2;
         let container = document.querySelector('#optionsContainer');
-        container.innerHTML = '';
-        document.querySelector('#dateContainer').style.display = 'none';
-        document.querySelector('#confirmationForm').style.display = 'none';
+        this.elementReset();
+
+        // Display Options
         this.services.forEach(service => {
             container.innerHTML += 
             `
@@ -163,11 +174,12 @@ export class Reservation {
                 </div>
                 <div class="option-title">${service.name}</div>
                 <div class="option-description">${service.duration}</div>
-                <div class="option-price">${service.price}$</div>
+                <div class="option-price">$${service.price}</div>
             </div>
             `;
         })
 
+        // Add click event for every option
         let options = [...container.children];
         options.forEach(option => {
             option.addEventListener('click', (e) => {
@@ -183,8 +195,7 @@ export class Reservation {
     // Stage 3
     datePick() {
         this.stage = 3;
-        document.querySelector('#confirmationForm').style.display = 'none';
-        document.querySelector('#optionsContainer').innerHTML = '';
+        this.elementReset();
         let dateContainer = document.querySelector('#dateContainer');
         dateContainer.style.display = 'grid';
         this.updateCalendar(this.currentDate.getFullYear(), this.currentDate.getMonth());
@@ -229,27 +240,34 @@ export class Reservation {
         document.querySelector('#noteTotal').innerText = `$${this.price}`;
     }
 
+    // Reset Date, ConfirmationForm and Options Container in one go
+    elementReset() {
+        document.querySelector('#dateContainer').style.display = 'none';
+        document.querySelector('#confirmationForm').style.display = 'none';
+        document.querySelector('#optionsContainer').innerHTML = '';
+    }
+
     // Visually update the calendar and time table, when it is changed by the user
     // Needed for Stage 4
     updateCalendar(year, month) {
         // Check which weekday is the first day of current month
         let dateLabel = document.querySelector('#dateLabel');
         let timesContainer = document.querySelector('#timesContainer');
-        dateLabel.setAttribute('data-year', this.currentDate.getFullYear());
-        dateLabel.setAttribute('data-month', this.currentDate.getMonth());
-        dateLabel.innerText = this.currentDate.toLocaleString("en-US", {month: 'long'}) +  " " + this.currentDate.getFullYear();
         let startWeekday = new Date(year, month, 1).getDay();
         let maxDays = new Date(year, month+1, 0).getDate();
         let daysContainer = document.querySelector("#daysContainer");
-        daysContainer.setAttribute('data-date', year + "-" + String(month).padStart(2, '0'));
         let j = 1;
+        
+        dateLabel.setAttribute('data-year', this.currentDate.getFullYear());
+        dateLabel.setAttribute('data-month', this.currentDate.getMonth());
+        dateLabel.innerText = this.currentDate.toLocaleString("en-US", {month: 'long'}) +  " " + this.currentDate.getFullYear();
+        daysContainer.setAttribute('data-date', year + "-" + String(month).padStart(2, '0'));
         daysContainer.innerHTML = '';
+        
+        // DIsplay all the days in the current month
         for(let i = 0; i < startWeekday + maxDays; i++) {
             if(i < startWeekday || j > maxDays) {
-                daysContainer.innerHTML += 
-                `
-                <div></div>
-                `;
+                daysContainer.innerHTML += `<div></div>`;
             } else {
                 let formattedDate = [this.currentDate.getFullYear(), String(this.currentDate.getMonth()+1).padStart(2, '0'), String(j).padStart(2, '0')].join('-');
                 let day = document.createElement('div');
@@ -267,6 +285,7 @@ export class Reservation {
                         let alreadySelected = document.querySelector('.day.selected');
                         this.dateTimeSelected['date'] = fullDate;
 
+                        // Day selection style management
                         if(alreadySelected && alreadySelected != e.target) {
                             alreadySelected.classList.remove('selected');
                             timeLabel.innerText = "Select date";
@@ -279,6 +298,8 @@ export class Reservation {
                         } else {
                             e.target.classList.add('selected');
                             timeLabel.innerText = [year, String(month).padStart(2, '0'), String(e.target.innerText).padStart(2, '0')].join('-');
+                            
+                            // Display time options for selected day
                             this.times.forEach(time => {
                                 let timeItem = document.createElement('div');
                                 timeItem.classList.add('time');
@@ -293,9 +314,17 @@ export class Reservation {
                             })
                         }
                     })
+
+                    /*
+                        Check if already exists in cache, then set the data from cache
+                        If not, reset everything in Stage 4
+                    */
                     let checkTimeItem = document.querySelector(`[data-time="${this.dateTimeSelected['time']}"]`);
                     if(this.dateTimeSelected['date'] == fullDate && checkTimeItem) {
                         day.classList.add('selected');
+                        if(document.querySelector(".time.selected")) [
+                            document.querySelector(".time.selected").classList.remove('selected')
+                        ]
                         checkTimeItem.classList.add('selected');
                     } else if(!this.dateTimeSelected['date'] || !this.dateTimeSelected['time']) {
                         timesContainer.innerHTML = '';
@@ -330,6 +359,7 @@ export class Reservation {
                     phone: phone
                 }
             }
+            console.log(final);
         }
     }
 
