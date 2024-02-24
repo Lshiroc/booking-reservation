@@ -3,6 +3,7 @@ export class Reservation {
         document.querySelector('#nextBtn').addEventListener('click', this.next);
         document.querySelector('#backBtn').addEventListener('click', this.back);
         this.currentDate = new Date();
+        this.dateTimeSelected = {date: null, time: null};
     }
 
     // Load the required data
@@ -41,15 +42,8 @@ export class Reservation {
     stage 4 = Connfirmation
     */
 
-    /*
-        TODO: instead of going through every stage
-        with nesting them, make a promise for more
-        clean step-by-step approach.
-    */
-
-    stageChange(stage, thisStage) {
-        console.log(stage)
-        thisStage = stage;
+    stageChange(stage) {
+        this.stage = stage;
         switch(stage) {
             case 1:
                 this.chooseStaff();
@@ -87,6 +81,9 @@ export class Reservation {
         options.forEach(option => {
             option.addEventListener('click', (e) => {
                 this.staffSelected = option.getAttribute("data-id");
+                this.serviceSelected = null;
+                this.dateTimeSelected = {};
+                document.querySelector('#daysContainer').removeAttribute('data-date');
                 this.stageChange(2);
             });
         });
@@ -116,18 +113,20 @@ export class Reservation {
         options.forEach(option => {
             option.addEventListener('click', (e) => {
                 this.serviceSelected = option.getAttribute("data-id");
+                this.dateTimeSelected = {};
+                document.querySelector('#daysContainer').removeAttribute('data-date');
                 this.stageChange(3);
             });
         })
     }
 
     // Stage 3
-    async datePick() {
+    datePick() {
         this.stage = 3;
         document.querySelector('#optionsContainer').innerHTML = '';
         let dateContainer = document.querySelector('#dateContainer');
         dateContainer.style.display = 'grid';
-        updateCalendar(this.currentDate.getFullYear(), this.currentDate.getMonth(), this.currentDate, this.dates, this.times, this.dateTimeSelected, this.stageChange, this.stage);
+        this.updateCalendar(this.currentDate.getFullYear(), this.currentDate.getMonth());
 
         document.querySelector('#nextDate').addEventListener('click', () => {
             let month = parseInt(dateLabel.getAttribute('data-month'));
@@ -139,7 +138,7 @@ export class Reservation {
                 month++;
             }
             this.currentDate = new Date(year, month, 1);
-            updateCalendar(year, month, this.currentDate, this.dates, this.times, this.dateTimeSelected, this.stageChange, this.stage);
+            this.updateCalendar(year, month);
         })
 
         document.querySelector('#backDate').addEventListener('click', () => {
@@ -152,76 +151,84 @@ export class Reservation {
                 month--;
             }
             this.currentDate = new Date(year, month, 1);
-            updateCalendar(year, month, this.currentDate, this.dates, this.times, this.dateTimeSelected, this.stageChange, this.stage);
+            this.updateCalendar(year, month);
         })
+    }
 
-        function updateCalendar(year, month, currentDate, dates, times, dateTimeSelected, stageChange, thisStage) {
-            // Check which weekday is the first day of current month
-            let dateLabel = document.querySelector('#dateLabel')
-            dateLabel.setAttribute('data-year', currentDate.getFullYear());
-            dateLabel.setAttribute('data-month', currentDate.getMonth());
-            dateLabel.innerText = currentDate.toLocaleString("en-US", {month: 'long'}) +  " " + currentDate.getFullYear();
-            let startWeekday = new Date(year, month, 1).getDay();
-            let maxDays = new Date(year, month+1, 0).getDate();
-            let daysContainer = document.querySelector("#daysContainer");
-            let j = 1;
-            daysContainer.innerHTML = '';
-            for(let i = 0; i < startWeekday + maxDays; i++) {
-                if(i < startWeekday || j > maxDays) {
-                    daysContainer.innerHTML += 
-                    `
-                    <div></div>
-                    `;
-                } else {
-                    let formattedDate = [currentDate.getFullYear(), String(currentDate.getMonth()+1).padStart(2, '0'), String(j).padStart(2, '0')].join('-');
-                    let day = document.createElement('div');
-                    day.classList.add('day');
-                    if(dates.includes(formattedDate)) {
-                        day.classList.add('active')
-                    }
-                    
-                    day.innerText = j;
-                    if(day.classList.contains('active')) {
-                        dateTimeSelected = {
-                            date: j,
-                            time: null
-                        }
-                        day.addEventListener('click', (e) => {
-                            let alreadySelected = document.querySelector('.day.selected');
-                            let timesContainer = document.querySelector('#timesContainer');
-                            let timeLabel = document.querySelector('#timeLabel');
-
-                            if(alreadySelected && alreadySelected != e.target) {
-                                alreadySelected.classList.remove('selected');
-                                timeLabel.innerText = "Select date";
-                                timesContainer.innerHTML = '';
-                            }
-                            if(e.target.classList.contains('selected')) {
-                                timesContainer.innerHTML = '';
-                                timeLabel.innerText = "Select date";
-                                e.target.classList.remove('selected');
-                            } else {
-                                e.target.classList.add('selected');
-                                timeLabel.innerText = [year, String(month).padStart(2, '0'), String(e.target.innerText).padStart(2, '0')].join('-');
-                                times.forEach(time => {
-                                    let timeItem = document.createElement('div');
-                                    timeItem.classList.add('time');
-                                    timeItem.innerHTML = `${time.start_time}<br/>${time.end_time}`;
-                                    timeItem.addEventListener('click', () => {
-                                        dateTimeSelected['time'] = `${time.start_time} ${time.end_time}`;
-                                        stageChange(4, thisStage);
-                                    })
-                                    if(dateTimeSelected['date'] == j && dateTimeSelected['time'] == `${time.start_time} ${time.end_time}`) {
-                                        day.classList.add('selected');
-                                    }
-                                    timesContainer.append(timeItem);
-                                })
-                            }
-                        })
-                    }
-                    daysContainer.append(day);
-                    j++;
+    updateCalendar(year, month) {
+        console.log("updateing...")
+        // Check which weekday is the first day of current month
+        let dateLabel = document.querySelector('#dateLabel');
+        let timesContainer = document.querySelector('#timesContainer');
+        dateLabel.setAttribute('data-year', this.currentDate.getFullYear());
+        dateLabel.setAttribute('data-month', this.currentDate.getMonth());
+        dateLabel.innerText = this.currentDate.toLocaleString("en-US", {month: 'long'}) +  " " + this.currentDate.getFullYear();
+        let startWeekday = new Date(year, month, 1).getDay();
+        let maxDays = new Date(year, month+1, 0).getDate();
+        let daysContainer = document.querySelector("#daysContainer");
+        daysContainer.setAttribute('data-date', year + "-" + String(month).padStart(2, '0'));
+        let j = 1;
+        daysContainer.innerHTML = '';
+        for(let i = 0; i < startWeekday + maxDays; i++) {
+            if(i < startWeekday || j > maxDays) {
+                daysContainer.innerHTML += 
+                `
+                <div></div>
+                `;
+            } else {
+                let formattedDate = [this.currentDate.getFullYear(), String(this.currentDate.getMonth()+1).padStart(2, '0'), String(j).padStart(2, '0')].join('-');
+                let day = document.createElement('div');
+                day.classList.add('day');
+                if(this.dates.includes(formattedDate)) {
+                    day.classList.add('active')
                 }
+                
+                day.innerText = j;
+                if(day.classList.contains('active')) {
+                    let fullDate = daysContainer.getAttribute('data-date') + "-" + String(j).padStart(2, "0");
+                    let timeLabel = document.querySelector('#timeLabel');
+                    
+                    day.addEventListener('click', (e) => {
+                        let alreadySelected = document.querySelector('.day.selected');
+                        this.dateTimeSelected['date'] = fullDate;
+
+                        if(alreadySelected && alreadySelected != e.target) {
+                            alreadySelected.classList.remove('selected');
+                            timeLabel.innerText = "Select date";
+                            timesContainer.innerHTML = '';
+                        }
+                        if(e.target.classList.contains('selected')) {
+                            timesContainer.innerHTML = '';
+                            timeLabel.innerText = "Select date";
+                            e.target.classList.remove('selected');
+                        } else {
+                            e.target.classList.add('selected');
+                            timeLabel.innerText = [year, String(month).padStart(2, '0'), String(e.target.innerText).padStart(2, '0')].join('-');
+                            this.times.forEach(time => {
+                                let timeItem = document.createElement('div');
+                                timeItem.classList.add('time');
+                                timeItem.innerHTML = `${time.start_time}<br/>${time.end_time}`;
+                                timeItem.addEventListener('click', () => {
+                                    this.dateTimeSelected['time'] = `${time.start_time} ${time.end_time}`;
+                                    this.stageChange(4);
+                                })
+                                timeItem.setAttribute('data-time', `${time.start_time} ${time.end_time}`);
+                                timesContainer.append(timeItem);
+                            })
+                        }
+                    })
+                    let checkTimeItem = document.querySelector(`[data-time="${this.dateTimeSelected['time']}"]`);
+                    if(this.dateTimeSelected['date'] == fullDate && checkTimeItem) {
+                        console.log("ehememe")
+                        day.classList.add('selected');
+                        checkTimeItem.classList.add('selected');
+                    } else if(!this.dateTimeSelected['date'] || !this.dateTimeSelected['time']) {
+                        timesContainer.innerHTML = '';
+                        timeLabel.innerText = 'Select date';
+                    }
+                }
+                daysContainer.append(day);
+                j++;
             }
         }
     }
@@ -234,13 +241,39 @@ export class Reservation {
     }
 
     next = () => {
+        switch(this.stage){
+            case 1:
+                if(!this.staffSelected) {
+                    this.giveWarning("Select staff");
+                } else {
+                    this.removeWarning();
+                    this.stageChange(2);
+                }
+                break;
+            case 2:
+                if(!this.serviceSelected) {
+                    this.giveWarning("Select service");
+                } else {
+                    this.removeWarning();
+                    this.stageChange(3);
+                }
+                break;
+            case 3:
+                if(!this.dateTimeSelected['date'] || !this.dateTimeSelected['time']) {
+                    this.giveWarning("Select date & time");
+                } else {
+                    this.removeWarning();
+                    this.stageChange(4);
+                }
+                break;
+        }
         if((this.stage == 1 && this.staffSelected) || (this.stage == 2 && this.serviceSelected)) {
             this.removeWarning();
         } else if(this.stage == 1 && !this.staffSelected) {
             this.giveWarning("Select staff");
         } else if(this.stage == 2 && !this.serviceSelected) {
             this.giveWarning('Select service');
-        } else if(this.stage == 3 && !this.dateTimeSelected) {
+        } else if(this.stage == 3 && (!this.dateTimeSelected['time'] ||  !this.dateTimeSelected['date'] )) {
             this.giveWarning('Select date & time');
         }
     }
